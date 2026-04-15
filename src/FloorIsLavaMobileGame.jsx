@@ -613,152 +613,7 @@ export default function FloorIsLavaMobileGame() {
               </button>
             </div>
           </>
-        ) : phase !== "menu" ? (
-          <>
-            <div style={{ textAlign: "center", marginBottom: 14, paddingTop: 14 }}>
-              <h1
-                style={{
-                  margin: "0 0 6px 0",
-                  fontSize: 30,
-                  color: "#ffd6a5",
-                  textShadow: "0 0 10px rgba(249,115,22,0.45)",
-                }}
-              >
-                The Floor Is Lava
-              </h1>
-              <div style={{ color: "#fec89a", fontSize: 14 }}>
-                Grab coins, outrun the collapse, and find the exit.
-              </div>
-            </div>
-
-            <div
-              style={{
-                background: "rgba(34,12,12,0.9)",
-                border: "1px solid #7c2d12",
-                borderRadius: 16,
-                padding: 12,
-                marginBottom: 12,
-                boxShadow: "0 0 18px rgba(249,115,22,0.08)",
-              }}
-            >
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(3, 1fr)",
-                  gap: 8,
-                  marginBottom: 10,
-                }}
-              >
-                <Stat label="Level" value={level} />
-                <Stat label="Score" value={score} />
-                <Stat label="High" value={highScore} />
-                <Stat label="Lives" value={lives} />
-                <Stat label="Coins" value={bankCoins} />
-                <Stat label="Freeze" value={freezeCharges} />
-              </div>
-
-              <div style={{ marginBottom: 8 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: 12,
-                    color: "#fec89a",
-                    marginBottom: 4,
-                  }}
-                >
-                  <span>Collapse timer</span>
-                  <span>{(timer / 1000).toFixed(1)}s</span>
-                </div>
-
-                <div
-                  style={{
-                    width: "100%",
-                    height: 14,
-                    borderRadius: 999,
-                    overflow: "hidden",
-                    background: "#3f1d1d",
-                    border: "1px solid #7c2d12",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: `${timerPercent}%`,
-                      height: "100%",
-                      background:
-                        timerPercent > 60
-                          ? "#f97316"
-                          : timerPercent > 30
-                          ? "#f59e0b"
-                          : "#ef4444",
-                      transition: "width 0.1s linear",
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div
-                style={{
-                  background: "#1f1111",
-                  borderRadius: 12,
-                  padding: 10,
-                  textAlign: "center",
-                  color: "#ffe8d6",
-                  minHeight: 42,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 14,
-                  border: "1px solid #5b1c1c",
-                }}
-              >
-                {message}
-              </div>
-            </div>
-
-            <div
-              style={{
-                background: "rgba(34,12,12,0.9)",
-                border: "1px solid #7c2d12",
-                borderRadius: 16,
-                padding: 12,
-                marginBottom: 12,
-                position: "relative",
-                boxShadow: "0 0 18px rgba(249,115,22,0.08)",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  maxWidth: 380,
-                  margin: "0 auto",
-                  display: "grid",
-                  gridTemplateColumns: `repeat(${levelData.size}, minmax(0, 1fr))`,
-                  gap: 6,
-                }}
-              >
-                {tiles}
-              </div>
-
-              <div
-                style={{
-                  marginTop: 12,
-                  display: "flex",
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                  gap: 8,
-                  fontSize: 12,
-                  color: "#fec89a",
-                }}
-              >
-                <Legend swatch="#f97316" label="Start" icon="➜" />
-                <Legend swatch="#16a34a" label="Exit" icon="↗" />
-                <Legend swatch="#facc15" label="Coin" icon="🪙" />
-                <Legend swatch="#dc2626" label="Lava" icon="🔥" />
-              </div>
-            </div>
-          </>
-        ) : null}
+        ) : phase !== "menu" ? null : null}
 
         {phase === "menu" && (
           <div
@@ -945,13 +800,17 @@ export default function FloorIsLavaMobileGame() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
+                  gridTemplateColumns: "repeat(3, 1fr)",
                   gap: 8,
                   marginBottom: 12,
                 }}
               >
+                <Stat label="Level" value={level} />
                 <Stat label="Score" value={score} />
+                <Stat label="High" value={highScore} />
+                <Stat label="Lives" value={lives} />
                 <Stat label="Coins" value={bankCoins} />
+                <Stat label="Freeze" value={freezeCharges} />
               </div>
 
               {shopMessage && (
@@ -1121,7 +980,7 @@ export default function FloorIsLavaMobileGame() {
                   gap: 8,
                 }}
               >
-                <button style={secondaryButtonStyle} onClick={returnToMenu}>
+                <button style={mainButtonStyle} onClick={returnToMenu}>
                   Main Menu
                 </button>
                 <button style={mainButtonStyle} onClick={startGame}>
