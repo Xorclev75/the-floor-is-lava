@@ -655,73 +655,45 @@ export default function FloorIsLavaMobileGame() {
             {phase === "playing" && (
               <div
                 style={{
-                  background: "rgba(34,12,12,0.9)",
-                  border: "1px solid #7c2d12",
-                  borderRadius: 16,
-                  padding: 12,
-                  boxShadow: "0 0 18px rgba(249,115,22,0.08)",
+                  background: "rgba(18, 36, 54, 0.92)",
+                  border: "1px solid #67e8f9",
+                  borderRadius: 18,
+                  padding: 14,
+                  boxShadow:
+                    "0 0 18px rgba(103,232,249,0.2), inset 0 0 18px rgba(255,255,255,0.03)",
                   marginBottom: 0,
                   flex: "0 0 auto",
+                  textAlign: "center",
                 }}
               >
                 <div
                   style={{
-                    textAlign: "center",
-                    color: "#fec89a",
+                    color: "#cffafe",
                     fontSize: 12,
                     marginBottom: 10,
+                    letterSpacing: 0.4,
                   }}
                 >
-                  Tap an adjacent tile or use the controls below.
-                </div>
-
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: 8,
-                    maxWidth: 260,
-                    margin: "0 auto",
-                  }}
-                >
-                  <div />
-                  <button style={controlButtonStyle} onClick={() => movePlayer(-1, 0)}>
-                    ▲
-                  </button>
-                  <div />
-
-                  <button style={controlButtonStyle} onClick={() => movePlayer(0, -1)}>
-                    ◀
-                  </button>
-                  <button style={controlButtonStyle} onClick={useFreeze}>
-                    ❄
-                  </button>
-                  <button style={controlButtonStyle} onClick={() => movePlayer(0, 1)}>
-                    ▶
-                  </button>
+                  Tap an adjacent tile to move
                 </div>
 
                 <button
-                  style={{
-                    ...controlButtonStyle,
-                    width: 84,
-                    display: "block",
-                    margin: "8px auto 0 auto",
-                  }}
-                  onClick={() => movePlayer(1, 0)}
+                  style={freezeButtonStyle}
+                  onClick={useFreeze}
+                  disabled={phase !== "playing"}
                 >
-                  ▼
+                  ❄ Freeze ({freezeCharges})
                 </button>
 
                 <div
                   style={{
                     textAlign: "center",
-                    color: "#fec89a",
+                    color: "#bae6fd",
                     fontSize: 12,
                     marginTop: 10,
                   }}
                 >
-                  Arrow keys/WASD work too. Frost button adds time.
+                  Freezes the collapse timer for a moment. Spacebar works too.
                 </div>
               </div>
             )}
@@ -836,6 +808,7 @@ export default function FloorIsLavaMobileGame() {
                   <div>• Orange tile = start</div>
                   <div>• Green tile = exit</div>
                   <div>• Yellow tiles hold coins</div>
+                  <div>• Tap an adjacent tile to move</div>
                   <div>• Tiles collapse into lava after you leave them</div>
                   <div>• Wait too long and you lose a life</div>
                 </div>
@@ -1177,14 +1150,16 @@ const secondaryButtonStyle = {
   boxShadow: "0 0 10px rgba(249,115,22,0.15)",
 };
 
-const controlButtonStyle = {
-  minHeight: 54,
-  borderRadius: 14,
-  border: "1px solid #fb923c",
-  background: "linear-gradient(180deg, #7c2d12 0%, #3f0d0d 100%)",
-  color: "#fff7ed",
+const freezeButtonStyle = {
+  width: "100%",
+  minHeight: 58,
+  borderRadius: 16,
+  border: "1px solid #67e8f9",
+  background: "linear-gradient(180deg, #0ea5e9 0%, #155e75 100%)",
+  color: "#ecfeff",
   fontWeight: "bold",
-  fontSize: 22,
+  fontSize: 20,
   cursor: "pointer",
-  boxShadow: "0 0 10px rgba(249,115,22,0.15)",
+  boxShadow: "0 0 18px rgba(103,232,249,0.35)",
+  letterSpacing: 0.3,
 };
