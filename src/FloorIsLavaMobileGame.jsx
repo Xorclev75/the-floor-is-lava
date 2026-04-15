@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const TITLE_IMAGE = "/TFIL_Logo.png";
 
@@ -85,6 +85,7 @@ function generateLevel(level) {
 
 export default function FloorIsLavaMobileGame() {
   const [phase, setPhase] = useState("menu"); // menu | playing | shop | lifeLost | gameover
+  const [showInstructions, setShowInstructions] = useState(false);
   const [level, setLevel] = useState(1);
   const [levelData, setLevelData] = useState(() => generateLevel(1));
   const [player, setPlayer] = useState({ r: 0, c: 0 });
@@ -111,8 +112,14 @@ export default function FloorIsLavaMobileGame() {
   const [pendingRestart, setPendingRestart] = useState(false);
   const [flashGameOver, setFlashGameOver] = useState(false);
 
+  const deathInProgressRef = useRef(false);
+
   const moveTime = useMemo(() => getMoveTime(level), [level]);
   const timerPercent = Math.max(0, Math.min(100, (timer / moveTime) * 100));
+
+  function resetDeathGuard() {
+    deathInProgressRef.current = false;
+  }
 
   function loadLevel(targetLevel) {
     const next = generateLevel(targetLevel);
@@ -123,11 +130,13 @@ export default function FloorIsLavaMobileGame() {
     setFreezeActive(false);
     setShopMessage("");
     setMessage(`Level ${targetLevel}: move fast or fall.`);
+    resetDeathGuard();
   }
 
   function startGame() {
     const first = generateLevel(1);
 
+    setShowInstructions(false);
     setPhase("playing");
     setLevel(1);
     setLevelData(first);
@@ -145,14 +154,17 @@ export default function FloorIsLavaMobileGame() {
 
     setTimer(getMoveTime(1));
     setMessage("Level 1: orange is start, green is exit.");
+    resetDeathGuard();
   }
 
   function returnToMenu() {
     setPhase("menu");
+    setShowInstructions(false);
     setShopMessage("");
     setPendingRestart(false);
     setFlashGameOver(false);
     setMessage("Reach the green exit before the floor drops away.");
+    resetDeathGuard();
   }
 
   function endGame() {
@@ -168,6 +180,9 @@ export default function FloorIsLavaMobileGame() {
   }
 
   function loseLife(reasonText = "You fell into the lava.") {
+    if (deathInProgressRef.current) return;
+    deathInProgressRef.current = true;
+
     setLives((prev) => {
       const nextLives = prev - 1;
 
@@ -192,6 +207,7 @@ export default function FloorIsLavaMobileGame() {
 
     setPhase("playing");
     setMessage(`Level ${level}: move fast or fall.`);
+    resetDeathGuard();
   }
 
   function clearLevelWithCoinCount(clearedRunCoins) {
@@ -210,6 +226,7 @@ export default function FloorIsLavaMobileGame() {
     setPendingRestart(false);
     setPhase("shop");
     setMessage(`Level ${level} clear. Visit the shop or continue.`);
+    resetDeathGuard();
   }
 
   function movePlayer(dr, dc) {
@@ -285,6 +302,7 @@ export default function FloorIsLavaMobileGame() {
     setLevel(target);
     setPhase("playing");
     loadLevel(target);
+    resetDeathGuard();
   }
 
   function buyLife() {
@@ -358,7 +376,7 @@ export default function FloorIsLavaMobileGame() {
 
         const next = prev - 100;
         if (next <= 0) {
-          setTimeout(() => loseLife("You stood too long on one tile."), 0);
+          setTimeout(() => loseLife("The collapse timer ran out — you fell into the lava!"), 0);
           return 0;
         }
 
@@ -383,15 +401,19 @@ export default function FloorIsLavaMobileGame() {
         }
       }
 
-      if (phase === "menu" && (e.key === "Enter" || e.key === " ")) {
+      if (phase === "menu" && !showInstructions && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault();
         startGame();
+      }
+
+      if (showInstructions && e.key === "Escape") {
+        setShowInstructions(false);
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [phase, player, levelData, runCoins, freezeCharges, freezeActive, moveTime]);
+  }, [phase, player, levelData, runCoins, freezeCharges, freezeActive, moveTime, showInstructions]);
 
   const tiles = [];
   for (let r = 0; r < levelData.size; r++) {
@@ -613,7 +635,7 @@ export default function FloorIsLavaMobileGame() {
               </button>
             </div>
           </>
-        ) : phase !== "menu" ? null : null}
+        ) : null}
 
         {phase === "menu" && (
           <div
@@ -669,12 +691,21 @@ export default function FloorIsLavaMobileGame() {
                   textAlign: "center",
                 }}
               >
-                <button
-                  style={{ ...mainButtonStyle, marginBottom: 12 }}
-                  onClick={startGame}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 8,
+                    marginBottom: 12,
+                  }}
                 >
-                  Start Game
-                </button>
+                  <button style={mainButtonStyle} onClick={startGame}>
+                    Start Game
+                  </button>
+                  <button style={secondaryButtonStyle} onClick={() => setShowInstructions(true)}>
+                    Instructions
+                  </button>
+                </div>
 
                 <div
                   style={{
@@ -721,14 +752,101 @@ export default function FloorIsLavaMobileGame() {
                       color: "#ffd6a5",
                     }}
                   >
-                    How to Play
+                    Quick Start
                   </div>
                   <div>• Orange tile = start</div>
                   <div>• Green tile = exit</div>
                   <div>• Yellow tiles hold coins</div>
-                  <div>• Tiles collapse into lava after you leave them</div>
-                  <div>• Wait too long and you lose a life</div>
+                  <div>• Tap Instructions for full rules</div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showInstructions && phase === "menu" && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 40,
+              background: "rgba(18,9,9,0.94)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 12,
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                maxWidth: 430,
+                background: "rgba(34,12,12,0.98)",
+                border: "1px solid #7c2d12",
+                borderRadius: 18,
+                padding: 16,
+                boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+                margin: "auto 0",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 24,
+                  fontWeight: "bold",
+                  marginBottom: 10,
+                  textAlign: "center",
+                  color: "#ffd6a5",
+                  textShadow: "0 0 10px rgba(249,115,22,0.35)",
+                }}
+              >
+                How to Play
+              </div>
+
+              <div
+                style={{
+                  background: "#1f1111",
+                  borderRadius: 12,
+                  padding: 14,
+                  fontSize: 14,
+                  color: "#ffe8d6",
+                  lineHeight: 1.55,
+                  textAlign: "left",
+                  border: "1px solid #5b1c1c",
+                  marginBottom: 14,
+                }}
+              >
+                <div style={{ marginBottom: 8 }}>
+                  Your goal is to <strong>reach the green exit</strong> before the floor gives way.
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  Move by <strong>clicking an adjacent tile</strong> next to your character.
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  Collect <strong>coins</strong> to buy <strong>Freeze charges</strong> and <strong>extra lives</strong> in the shop between levels.
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  Use <strong>Freeze</strong> when you need extra time and the collapse timer is getting low.
+                </div>
+                <div>
+                  Watch out: if the <strong>collapse timer runs out</strong>, you <strong>lose a life</strong> and fall into the lava!
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 8,
+                }}
+              >
+                <button style={secondaryButtonStyle} onClick={() => setShowInstructions(false)}>
+                  Back
+                </button>
+                <button style={mainButtonStyle} onClick={startGame}>
+                  Start Game
+                </button>
               </div>
             </div>
           </div>
@@ -1090,6 +1208,7 @@ const secondaryButtonStyle = {
   background: "linear-gradient(180deg, #7c2d12 0%, #581c1c 100%)",
   color: "#fff7ed",
   fontWeight: "bold",
+  fontSize: 16,
   padding: "0 14px",
   cursor: "pointer",
   boxShadow: "0 0 10px rgba(249,115,22,0.15)",
