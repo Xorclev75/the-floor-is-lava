@@ -482,7 +482,8 @@ export default function FloorIsLavaMobileGame() {
     <div
       style={{
         minHeight: "100dvh",
-        background: "linear-gradient(180deg, #120909 0%, #2a1111 35%, #3f0d0d 65%, #1f2937 100%)",
+        background:
+          "linear-gradient(180deg, #120909 0%, #2a1111 35%, #3f0d0d 65%, #1f2937 100%)",
         color: "#ffe8d6",
         padding: 12,
         fontFamily: "Arial, sans-serif",
@@ -502,7 +503,117 @@ export default function FloorIsLavaMobileGame() {
           justifyContent: phase === "menu" ? "center" : "flex-start",
         }}
       >
-        {phase !== "menu" && (
+        {phase === "playing" ? (
+          <>
+            <div
+              style={{
+                background: "rgba(34,12,12,0.9)",
+                border: "1px solid #7c2d12",
+                borderRadius: 16,
+                padding: 10,
+                marginBottom: 12,
+                boxShadow: "0 0 18px rgba(249,115,22,0.08)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 12,
+                  color: "#fec89a",
+                  marginBottom: 4,
+                }}
+              >
+                <span>Collapse timer</span>
+                <span>{(timer / 1000).toFixed(1)}s</span>
+              </div>
+
+              <div
+                style={{
+                  width: "100%",
+                  height: 12,
+                  borderRadius: 999,
+                  overflow: "hidden",
+                  background: "#3f1d1d",
+                  border: "1px solid #7c2d12",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${timerPercent}%`,
+                    height: "100%",
+                    background:
+                      timerPercent > 60
+                        ? "#f97316"
+                        : timerPercent > 30
+                        ? "#f59e0b"
+                        : "#ef4444",
+                    transition: "width 0.1s linear",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "rgba(34,12,12,0.9)",
+                border: "1px solid #7c2d12",
+                borderRadius: 16,
+                padding: 12,
+                marginBottom: 12,
+                position: "relative",
+                boxShadow: "0 0 18px rgba(249,115,22,0.08)",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  maxWidth: 380,
+                  margin: "0 auto",
+                  display: "grid",
+                  gridTemplateColumns: `repeat(${levelData.size}, minmax(0, 1fr))`,
+                  gap: 6,
+                }}
+              >
+                {tiles}
+              </div>
+
+              <div
+                style={{
+                  marginTop: 12,
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  gap: 8,
+                  fontSize: 12,
+                  color: "#fec89a",
+                }}
+              >
+                <Legend swatch="#f97316" label="Start" icon="➜" />
+                <Legend swatch="#16a34a" label="Exit" icon="↗" />
+                <Legend swatch="#facc15" label="Coin" icon="🪙" />
+                <Legend swatch="#dc2626" label="Lava" icon="🔥" />
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "rgba(18, 36, 54, 0.92)",
+                border: "1px solid #67e8f9",
+                borderRadius: 18,
+                padding: 12,
+                boxShadow:
+                  "0 0 18px rgba(103,232,249,0.2), inset 0 0 18px rgba(255,255,255,0.03)",
+                marginBottom: 12,
+                textAlign: "center",
+              }}
+            >
+              <button style={freezeButtonStyle} onClick={useFreeze}>
+                ❄ Freeze ({freezeCharges})
+              </button>
+            </div>
+          </>
+        ) : phase !== "menu" ? (
           <>
             <div style={{ textAlign: "center", marginBottom: 14, paddingTop: 14 }}>
               <h1
@@ -646,81 +757,8 @@ export default function FloorIsLavaMobileGame() {
                 <Legend swatch="#dc2626" label="Lava" icon="🔥" />
               </div>
             </div>
-
-            {phase === "playing" && (
-              <div
-                style={{
-                  background: "rgba(34,12,12,0.9)",
-                  border: "1px solid #7c2d12",
-                  borderRadius: 16,
-                  padding: 12,
-                  boxShadow: "0 0 18px rgba(249,115,22,0.08)",
-                  marginBottom: 12,
-                }}
-              >
-                <div
-                  style={{
-                    textAlign: "center",
-                    color: "#fec89a",
-                    fontSize: 12,
-                    marginBottom: 10,
-                  }}
-                >
-                  Tap an adjacent tile or use the controls below.
-                </div>
-
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: 8,
-                    maxWidth: 260,
-                    margin: "0 auto",
-                  }}
-                >
-                  <div />
-                  <button style={controlButtonStyle} onClick={() => movePlayer(-1, 0)}>
-                    ▲
-                  </button>
-                  <div />
-
-                  <button style={controlButtonStyle} onClick={() => movePlayer(0, -1)}>
-                    ◀
-                  </button>
-                  <button style={controlButtonStyle} onClick={useFreeze}>
-                    ❄
-                  </button>
-                  <button style={controlButtonStyle} onClick={() => movePlayer(0, 1)}>
-                    ▶
-                  </button>
-                </div>
-
-                <button
-                  style={{
-                    ...controlButtonStyle,
-                    width: 84,
-                    display: "block",
-                    margin: "8px auto 0 auto",
-                  }}
-                  onClick={() => movePlayer(1, 0)}
-                >
-                  ▼
-                </button>
-
-                <div
-                  style={{
-                    textAlign: "center",
-                    color: "#fec89a",
-                    fontSize: 12,
-                    marginTop: 10,
-                  }}
-                >
-                  Arrow keys/WASD work too. Frost button adds time.
-                </div>
-              </div>
-            )}
           </>
-        )}
+        ) : null}
 
         {phase === "menu" && (
           <div
@@ -776,6 +814,13 @@ export default function FloorIsLavaMobileGame() {
                   textAlign: "center",
                 }}
               >
+                <button
+                  style={{ ...mainButtonStyle, marginBottom: 12 }}
+                  onClick={startGame}
+                >
+                  Start Game
+                </button>
+
                 <div
                   style={{
                     fontSize: 13,
@@ -805,7 +850,7 @@ export default function FloorIsLavaMobileGame() {
                     background: "#1f1111",
                     borderRadius: 12,
                     padding: 12,
-                    marginBottom: 12,
+                    marginBottom: 4,
                     fontSize: 13,
                     color: "#ffe8d6",
                     lineHeight: 1.45,
@@ -829,10 +874,6 @@ export default function FloorIsLavaMobileGame() {
                   <div>• Tiles collapse into lava after you leave them</div>
                   <div>• Wait too long and you lose a life</div>
                 </div>
-
-                <button style={mainButtonStyle} onClick={startGame}>
-                  Start Game
-                </button>
               </div>
             </div>
           </div>
@@ -881,12 +922,36 @@ export default function FloorIsLavaMobileGame() {
               <div
                 style={{
                   textAlign: "center",
+                  color: "#ffe8d6",
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  marginBottom: 8,
+                }}
+              >
+                You made it to the next level!
+              </div>
+
+              <div
+                style={{
+                  textAlign: "center",
                   color: "#fec89a",
                   fontSize: 14,
                   marginBottom: 12,
                 }}
               >
                 Spend your coins now, then continue to the next level.
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 8,
+                  marginBottom: 12,
+                }}
+              >
+                <Stat label="Score" value={score} />
+                <Stat label="Coins" value={bankCoins} />
               </div>
 
               {shopMessage && (
@@ -1171,14 +1236,16 @@ const secondaryButtonStyle = {
   boxShadow: "0 0 10px rgba(249,115,22,0.15)",
 };
 
-const controlButtonStyle = {
-  minHeight: 54,
-  borderRadius: 14,
-  border: "1px solid #fb923c",
-  background: "linear-gradient(180deg, #7c2d12 0%, #3f0d0d 100%)",
-  color: "#fff7ed",
+const freezeButtonStyle = {
+  width: "100%",
+  minHeight: 58,
+  borderRadius: 16,
+  border: "1px solid #67e8f9",
+  background: "linear-gradient(180deg, #22d3ee 0%, #0ea5e9 45%, #155e75 100%)",
+  color: "#ecfeff",
   fontWeight: "bold",
-  fontSize: 22,
+  fontSize: 20,
   cursor: "pointer",
-  boxShadow: "0 0 10px rgba(249,115,22,0.15)",
+  boxShadow: "0 0 18px rgba(103,232,249,0.35)",
+  letterSpacing: 0.3,
 };
