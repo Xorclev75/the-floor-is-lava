@@ -265,6 +265,21 @@ export default function FloorIsLavaMobileGame() {
     }
   }
 
+  function handleTileTap(r, c) {
+    if (phase !== "playing") return;
+
+    const dr = r - player.r;
+    const dc = c - player.c;
+
+    const isAdjacent =
+      (Math.abs(dr) === 1 && dc === 0) ||
+      (Math.abs(dc) === 1 && dr === 0);
+
+    if (!isAdjacent) return;
+
+    movePlayer(dr, dc);
+  }
+
   function nextLevel() {
     const target = level + 1;
     setLevel(target);
@@ -388,9 +403,17 @@ export default function FloorIsLavaMobileGame() {
       const isCoin = levelData.coins.has(key);
       const isLava = levelData.lava.has(key);
 
+      const dr = r - player.r;
+      const dc = c - player.c;
+      const isAdjacent =
+        (Math.abs(dr) === 1 && dc === 0) ||
+        (Math.abs(dc) === 1 && dr === 0);
+      const isTappable = phase === "playing" && isAdjacent && !isLava;
+
       let background = "#5b6472";
       let content = "";
       let border = "2px solid #1f2937";
+      let boxShadow = "none";
 
       if (isLava) {
         background = "#dc2626";
@@ -400,6 +423,7 @@ export default function FloorIsLavaMobileGame() {
         background = "#2563eb";
         content = "🧍";
         border = "2px solid #93c5fd";
+        boxShadow = "0 0 14px rgba(147,197,253,0.9)";
       } else if (isExit) {
         background = "#16a34a";
         content = "↗";
@@ -414,9 +438,16 @@ export default function FloorIsLavaMobileGame() {
         border = "2px solid #fdba74";
       }
 
+      if (isTappable) {
+        boxShadow = "0 0 10px rgba(249,115,22,0.35)";
+      }
+
       tiles.push(
-        <div
+        <button
           key={key}
+          onClick={() => handleTileTap(r, c)}
+          disabled={phase !== "playing" || isLava}
+          aria-label={`Tile ${r + 1}, ${c + 1}`}
           style={{
             aspectRatio: "1 / 1",
             width: "100%",
@@ -429,12 +460,18 @@ export default function FloorIsLavaMobileGame() {
             fontSize: levelData.size >= 6 ? 18 : 24,
             fontWeight: "bold",
             boxSizing: "border-box",
-            boxShadow: isPlayer ? "0 0 14px rgba(147,197,253,0.9)" : "none",
-            transition: "transform 0.08s ease, background 0.15s ease",
+            boxShadow,
+            transition: "transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease",
+            padding: 0,
+            cursor: isTappable ? "pointer" : "default",
+            touchAction: "manipulation",
+            outline: "none",
+            appearance: "none",
+            WebkitAppearance: "none",
           }}
         >
           {content}
-        </div>
+        </button>
       );
     }
   }
@@ -621,6 +658,17 @@ export default function FloorIsLavaMobileGame() {
                   marginBottom: 12,
                 }}
               >
+                <div
+                  style={{
+                    textAlign: "center",
+                    color: "#fec89a",
+                    fontSize: 12,
+                    marginBottom: 10,
+                  }}
+                >
+                  Tap an adjacent tile or use the controls below.
+                </div>
+
                 <div
                   style={{
                     display: "grid",
