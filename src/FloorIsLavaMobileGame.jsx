@@ -504,7 +504,7 @@ export default function FloorIsLavaMobileGame() {
       >
         {phase !== "menu" && (
           <>
-            <div style={{ textAlign: "center", marginBottom: 10, paddingTop: 8 }}>
+            <div style={{ textAlign: "center", marginBottom: 10, paddingTop: 8, flex: "0 0 auto" }}>
               <h1
                 style={{
                   margin: "0 0 6px 0",
@@ -618,31 +618,46 @@ export default function FloorIsLavaMobileGame() {
                 flex: phase === "playing" ? "1 1 0" : "0 0 auto",
                 minHeight: 0,
                 overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <div
                 style={{
-                  width: "100%",
-                  maxWidth:
-                    levelData.size >= 6 ? 300 : levelData.size === 5 ? 320 : 340,
-                  margin: "0 auto",
-                  display: "grid",
-                  gridTemplateColumns: `repeat(${levelData.size}, minmax(0, 1fr))`,
-                  gap: levelData.size >= 6 ? 4 : 6,
+                  flex: "1 1 auto",
+                  minHeight: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingBottom: 10,
                 }}
               >
-                {tiles}
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth:
+                      levelData.size >= 6 ? 300 : levelData.size === 5 ? 320 : 340,
+                    margin: "0 auto",
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${levelData.size}, minmax(0, 1fr))`,
+                    gap: levelData.size >= 6 ? 4 : 6,
+                  }}
+                >
+                  {tiles}
+                </div>
               </div>
 
               <div
                 style={{
-                  marginTop: 10,
+                  flex: "0 0 auto",
+                  marginTop: 2,
                   display: "flex",
                   flexWrap: "wrap",
                   justifyContent: "center",
                   gap: 8,
                   fontSize: 12,
                   color: "#fec89a",
+                  paddingTop: 4,
                 }}
               >
                 <Legend swatch="#f97316" label="Start" icon="➜" />
