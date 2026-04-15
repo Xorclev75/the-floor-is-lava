@@ -481,25 +481,25 @@ export default function FloorIsLavaMobileGame() {
   return (
     <div
       style={{
-        minHeight: "100dvh",
+        height: "100dvh",
         background: "linear-gradient(180deg, #120909 0%, #2a1111 35%, #3f0d0d 65%, #1f2937 100%)",
         color: "#ffe8d6",
         padding: 12,
         fontFamily: "Arial, sans-serif",
         boxSizing: "border-box",
-        overflowX: "hidden",
-        overflowY: "auto",
+        overflow: phase === "playing" ? "hidden" : "auto",
       }}
     >
       <div
         style={{
           maxWidth: 460,
           margin: "0 auto",
-          minHeight: "calc(100dvh - 24px)",
+          height: "calc(100dvh - 24px)",
           position: "relative",
           display: "flex",
           flexDirection: "column",
           justifyContent: phase === "menu" ? "center" : "flex-start",
+          overflow: "hidden",
         }}
       >
         {phase !== "menu" && (
@@ -614,12 +614,17 @@ export default function FloorIsLavaMobileGame() {
                 marginBottom: 12,
                 position: "relative",
                 boxShadow: "0 0 18px rgba(249,115,22,0.08)",
+                flex: phase === "playing" ? "1 1 auto" : "0 0 auto",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                minHeight: 0,
               }}
             >
               <div
                 style={{
                   width: "100%",
-                  maxWidth: 380,
+                  maxWidth: 340,
                   margin: "0 auto",
                   display: "grid",
                   gridTemplateColumns: `repeat(${levelData.size}, minmax(0, 1fr))`,
@@ -655,7 +660,8 @@ export default function FloorIsLavaMobileGame() {
                   borderRadius: 16,
                   padding: 12,
                   boxShadow: "0 0 18px rgba(249,115,22,0.08)",
-                  marginBottom: 12,
+                  marginBottom: 0,
+                  flex: "0 0 auto",
                 }}
               >
                 <div
@@ -776,6 +782,10 @@ export default function FloorIsLavaMobileGame() {
                   textAlign: "center",
                 }}
               >
+                <button style={{ ...mainButtonStyle, marginBottom: 12 }} onClick={startGame}>
+                  Start Game
+                </button>
+
                 <div
                   style={{
                     fontSize: 13,
@@ -805,7 +815,7 @@ export default function FloorIsLavaMobileGame() {
                     background: "#1f1111",
                     borderRadius: 12,
                     padding: 12,
-                    marginBottom: 12,
+                    marginBottom: 4,
                     fontSize: 13,
                     color: "#ffe8d6",
                     lineHeight: 1.45,
@@ -829,10 +839,6 @@ export default function FloorIsLavaMobileGame() {
                   <div>• Tiles collapse into lava after you leave them</div>
                   <div>• Wait too long and you lose a life</div>
                 </div>
-
-                <button style={mainButtonStyle} onClick={startGame}>
-                  Start Game
-                </button>
               </div>
             </div>
           </div>
