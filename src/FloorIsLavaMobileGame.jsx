@@ -481,25 +481,25 @@ export default function FloorIsLavaMobileGame() {
   return (
     <div
       style={{
-        height: "100dvh",
+        minHeight: "100dvh",
         background: "linear-gradient(180deg, #120909 0%, #2a1111 35%, #3f0d0d 65%, #1f2937 100%)",
         color: "#ffe8d6",
         padding: 12,
         fontFamily: "Arial, sans-serif",
         boxSizing: "border-box",
-        overflow: phase === "playing" ? "hidden" : "auto",
+        overflowX: "hidden",
+        overflowY: "auto",
       }}
     >
       <div
         style={{
           maxWidth: 460,
           margin: "0 auto",
-          height: "calc(100dvh - 24px)",
+          minHeight: "calc(100dvh - 24px)",
           position: "relative",
           display: "flex",
           flexDirection: "column",
           justifyContent: phase === "menu" ? "center" : "flex-start",
-          overflow: "hidden",
         }}
       >
         {phase !== "menu" && (
@@ -614,17 +614,12 @@ export default function FloorIsLavaMobileGame() {
                 marginBottom: 12,
                 position: "relative",
                 boxShadow: "0 0 18px rgba(249,115,22,0.08)",
-                flex: phase === "playing" ? "1 1 auto" : "0 0 auto",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                minHeight: 0,
               }}
             >
               <div
                 style={{
                   width: "100%",
-                  maxWidth: 340,
+                  maxWidth: 380,
                   margin: "0 auto",
                   display: "grid",
                   gridTemplateColumns: `repeat(${levelData.size}, minmax(0, 1fr))`,
@@ -655,45 +650,72 @@ export default function FloorIsLavaMobileGame() {
             {phase === "playing" && (
               <div
                 style={{
-                  background: "rgba(18, 36, 54, 0.92)",
-                  border: "1px solid #67e8f9",
-                  borderRadius: 18,
-                  padding: 14,
-                  boxShadow:
-                    "0 0 18px rgba(103,232,249,0.2), inset 0 0 18px rgba(255,255,255,0.03)",
-                  marginBottom: 0,
-                  flex: "0 0 auto",
-                  textAlign: "center",
+                  background: "rgba(34,12,12,0.9)",
+                  border: "1px solid #7c2d12",
+                  borderRadius: 16,
+                  padding: 12,
+                  boxShadow: "0 0 18px rgba(249,115,22,0.08)",
+                  marginBottom: 12,
                 }}
               >
                 <div
                   style={{
-                    color: "#cffafe",
+                    textAlign: "center",
+                    color: "#fec89a",
                     fontSize: 12,
                     marginBottom: 10,
-                    letterSpacing: 0.4,
                   }}
                 >
-                  Tap an adjacent tile to move
+                  Tap an adjacent tile or use the controls below.
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: 8,
+                    maxWidth: 260,
+                    margin: "0 auto",
+                  }}
+                >
+                  <div />
+                  <button style={controlButtonStyle} onClick={() => movePlayer(-1, 0)}>
+                    ▲
+                  </button>
+                  <div />
+
+                  <button style={controlButtonStyle} onClick={() => movePlayer(0, -1)}>
+                    ◀
+                  </button>
+                  <button style={controlButtonStyle} onClick={useFreeze}>
+                    ❄
+                  </button>
+                  <button style={controlButtonStyle} onClick={() => movePlayer(0, 1)}>
+                    ▶
+                  </button>
                 </div>
 
                 <button
-                  style={freezeButtonStyle}
-                  onClick={useFreeze}
-                  disabled={phase !== "playing"}
+                  style={{
+                    ...controlButtonStyle,
+                    width: 84,
+                    display: "block",
+                    margin: "8px auto 0 auto",
+                  }}
+                  onClick={() => movePlayer(1, 0)}
                 >
-                  ❄ Freeze ({freezeCharges})
+                  ▼
                 </button>
 
                 <div
                   style={{
                     textAlign: "center",
-                    color: "#bae6fd",
+                    color: "#fec89a",
                     fontSize: 12,
                     marginTop: 10,
                   }}
                 >
-                  Freezes the collapse timer for a moment. Spacebar works too.
+                  Arrow keys/WASD work too. Frost button adds time.
                 </div>
               </div>
             )}
@@ -754,10 +776,6 @@ export default function FloorIsLavaMobileGame() {
                   textAlign: "center",
                 }}
               >
-                <button style={{ ...mainButtonStyle, marginBottom: 12 }} onClick={startGame}>
-                  Start Game
-                </button>
-
                 <div
                   style={{
                     fontSize: 13,
@@ -787,7 +805,7 @@ export default function FloorIsLavaMobileGame() {
                     background: "#1f1111",
                     borderRadius: 12,
                     padding: 12,
-                    marginBottom: 4,
+                    marginBottom: 12,
                     fontSize: 13,
                     color: "#ffe8d6",
                     lineHeight: 1.45,
@@ -808,10 +826,13 @@ export default function FloorIsLavaMobileGame() {
                   <div>• Orange tile = start</div>
                   <div>• Green tile = exit</div>
                   <div>• Yellow tiles hold coins</div>
-                  <div>• Tap an adjacent tile to move</div>
                   <div>• Tiles collapse into lava after you leave them</div>
                   <div>• Wait too long and you lose a life</div>
                 </div>
+
+                <button style={mainButtonStyle} onClick={startGame}>
+                  Start Game
+                </button>
               </div>
             </div>
           </div>
@@ -1150,16 +1171,14 @@ const secondaryButtonStyle = {
   boxShadow: "0 0 10px rgba(249,115,22,0.15)",
 };
 
-const freezeButtonStyle = {
-  width: "100%",
-  minHeight: 58,
-  borderRadius: 16,
-  border: "1px solid #67e8f9",
-  background: "linear-gradient(180deg, #0ea5e9 0%, #155e75 100%)",
-  color: "#ecfeff",
+const controlButtonStyle = {
+  minHeight: 54,
+  borderRadius: 14,
+  border: "1px solid #fb923c",
+  background: "linear-gradient(180deg, #7c2d12 0%, #3f0d0d 100%)",
+  color: "#fff7ed",
   fontWeight: "bold",
-  fontSize: 20,
+  fontSize: 22,
   cursor: "pointer",
-  boxShadow: "0 0 18px rgba(103,232,249,0.35)",
-  letterSpacing: 0.3,
+  boxShadow: "0 0 10px rgba(249,115,22,0.15)",
 };
