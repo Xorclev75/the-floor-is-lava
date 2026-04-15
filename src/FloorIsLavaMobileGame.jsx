@@ -444,20 +444,21 @@ export default function FloorIsLavaMobileGame() {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: "linear-gradient(180deg, #120909 0%, #2a1111 35%, #3f0d0d 65%, #1f2937 100%)",
         color: "#ffe8d6",
-        padding: 16,
+        padding: 12,
         fontFamily: "Arial, sans-serif",
         boxSizing: "border-box",
-        overflow: "hidden",
+        overflowX: "hidden",
+        overflowY: "auto",
       }}
     >
       <div
         style={{
           maxWidth: 460,
           margin: "0 auto",
-          minHeight: "calc(100vh - 32px)",
+          minHeight: "calc(100dvh - 24px)",
           position: "relative",
           display: "flex",
           flexDirection: "column",
@@ -617,6 +618,7 @@ export default function FloorIsLavaMobileGame() {
                   borderRadius: 16,
                   padding: 12,
                   boxShadow: "0 0 18px rgba(249,115,22,0.08)",
+                  marginBottom: 12,
                 }}
               >
                 <div
@@ -682,7 +684,9 @@ export default function FloorIsLavaMobileGame() {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              padding: 16,
+              padding: 12,
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             <div
@@ -708,23 +712,25 @@ export default function FloorIsLavaMobileGame() {
                     display: "block",
                     width: "100%",
                     height: "auto",
+                    maxHeight: "48dvh",
+                    objectFit: "contain",
                   }}
                 />
               </div>
 
               <div
                 style={{
-                  marginTop: 16,
+                  marginTop: 12,
                   background: "rgba(34,12,12,0.95)",
                   border: "1px solid #7c2d12",
                   borderRadius: 16,
-                  padding: 14,
+                  padding: 12,
                   textAlign: "center",
                 }}
               >
                 <div
                   style={{
-                    fontSize: 14,
+                    fontSize: 13,
                     color: "#ffe8d6",
                     lineHeight: 1.5,
                     marginBottom: 12,
@@ -752,14 +758,21 @@ export default function FloorIsLavaMobileGame() {
                     borderRadius: 12,
                     padding: 12,
                     marginBottom: 12,
-                    fontSize: 14,
+                    fontSize: 13,
                     color: "#ffe8d6",
                     lineHeight: 1.45,
                     textAlign: "left",
                     border: "1px solid #5b1c1c",
                   }}
                 >
-                  <div style={{ fontWeight: "bold", marginBottom: 6, textAlign: "center", color: "#ffd6a5" }}>
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      marginBottom: 6,
+                      textAlign: "center",
+                      color: "#ffd6a5",
+                    }}
+                  >
                     How to Play
                   </div>
                   <div>• Orange tile = start</div>
@@ -787,7 +800,9 @@ export default function FloorIsLavaMobileGame() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: 16,
+              padding: 12,
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             <div
@@ -799,6 +814,7 @@ export default function FloorIsLavaMobileGame() {
                 borderRadius: 18,
                 padding: 14,
                 boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+                margin: "auto 0",
               }}
             >
               <div
@@ -875,7 +891,9 @@ export default function FloorIsLavaMobileGame() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: 16,
+              padding: 12,
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             <div
@@ -888,6 +906,7 @@ export default function FloorIsLavaMobileGame() {
                 padding: 16,
                 textAlign: "center",
                 boxShadow: "0 16px 40px rgba(0,0,0,0.5)",
+                margin: "auto 0",
               }}
             >
               <div
@@ -938,7 +957,9 @@ export default function FloorIsLavaMobileGame() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              padding: 16,
+              padding: 12,
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
             }}
           >
             <div
@@ -951,6 +972,7 @@ export default function FloorIsLavaMobileGame() {
                 padding: 16,
                 textAlign: "center",
                 boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+                margin: "auto 0",
               }}
             >
               <div
