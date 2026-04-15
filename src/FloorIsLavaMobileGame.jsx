@@ -179,7 +179,6 @@ export default function FloorIsLavaMobileGame() {
       setPhase("lifeLost");
       setPendingRestart(true);
       setMessage(reasonText);
-
       return nextLives;
     });
   }
@@ -189,7 +188,6 @@ export default function FloorIsLavaMobileGame() {
       loadLevel(level);
       setPendingRestart(false);
     }
-
     setPhase("playing");
     setMessage(`Level ${level}: move fast or fall.`);
   }
@@ -341,11 +339,7 @@ export default function FloorIsLavaMobileGame() {
 
   useEffect(() => {
     if (!shopMessage) return;
-
-    const timeout = setTimeout(() => {
-      setShopMessage("");
-    }, SHOP_MESSAGE_DURATION);
-
+    const timeout = setTimeout(() => setShopMessage(""), SHOP_MESSAGE_DURATION);
     return () => clearTimeout(timeout);
   }, [shopMessage]);
 
@@ -355,13 +349,11 @@ export default function FloorIsLavaMobileGame() {
     const tick = setInterval(() => {
       setTimer((prev) => {
         if (freezeActive) return prev;
-
         const next = prev - 100;
         if (next <= 0) {
           setTimeout(() => loseLife("You stood too long on one tile."), 0);
           return 0;
         }
-
         return next;
       });
     }, 100);
@@ -476,50 +468,58 @@ export default function FloorIsLavaMobileGame() {
     }
   }
 
+  const boardMaxWidth =
+    levelData.size >= 7 ? 300 :
+    levelData.size === 6 ? 308 :
+    levelData.size === 5 ? 330 :
+    350;
+
+  const gridGap = levelData.size >= 6 ? 4 : 6;
   const shopMessageIsError = shopMessage === "Not enough coins!";
 
   return (
     <div
       style={{
-        minHeight: "100dvh",
+        height: "100dvh",
         background: "linear-gradient(180deg, #120909 0%, #2a1111 35%, #3f0d0d 65%, #1f2937 100%)",
         color: "#ffe8d6",
-        padding: 12,
+        padding: 10,
         fontFamily: "Arial, sans-serif",
         boxSizing: "border-box",
-        overflowX: "hidden",
-        overflowY: "auto",
+        overflow: phase === "playing" ? "hidden" : "auto",
       }}
     >
       <div
         style={{
           maxWidth: 460,
           margin: "0 auto",
-          minHeight: "calc(100dvh - 24px)",
+          height: "calc(100dvh - 20px)",
           position: "relative",
           display: "flex",
           flexDirection: "column",
           justifyContent: phase === "menu" ? "center" : "flex-start",
+          overflow: "hidden",
         }}
       >
         {phase !== "menu" && (
           <>
             <div
               style={{
-                background: "rgba(34,12,12,0.9)",
+                background: "rgba(34,12,12,0.92)",
                 border: "1px solid #7c2d12",
                 borderRadius: 16,
                 padding: 10,
-                marginBottom: 10,
+                marginBottom: 8,
                 boxShadow: "0 0 18px rgba(249,115,22,0.08)",
+                flex: "0 0 auto",
               }}
             >
               <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(3, 1fr)",
-                  gap: 8,
-                  marginBottom: 10,
+                  gap: 6,
+                  marginBottom: 8,
                 }}
               >
                 <Stat label="Level" value={level} />
@@ -547,7 +547,7 @@ export default function FloorIsLavaMobileGame() {
                 <div
                   style={{
                     width: "100%",
-                    height: 14,
+                    height: 12,
                     borderRadius: 999,
                     overflow: "hidden",
                     background: "#3f1d1d",
@@ -574,14 +574,14 @@ export default function FloorIsLavaMobileGame() {
                 style={{
                   background: "#1f1111",
                   borderRadius: 12,
-                  padding: 10,
+                  padding: 8,
                   textAlign: "center",
                   color: "#ffe8d6",
-                  minHeight: 42,
+                  minHeight: 38,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: 14,
+                  fontSize: 13,
                   border: "1px solid #5b1c1c",
                 }}
               >
@@ -591,14 +591,13 @@ export default function FloorIsLavaMobileGame() {
 
             <div
               style={{
-                background: "rgba(34,12,12,0.9)",
+                background: "rgba(34,12,12,0.92)",
                 border: "1px solid #7c2d12",
                 borderRadius: 16,
-                padding: 10,
-                marginBottom: 10,
-                position: "relative",
+                padding: 8,
+                marginBottom: 8,
                 boxShadow: "0 0 18px rgba(249,115,22,0.08)",
-                flex: phase === "playing" ? "1 1 0" : "0 0 auto",
+                flex: "1 1 auto",
                 minHeight: 0,
                 overflow: "hidden",
                 display: "flex",
@@ -612,18 +611,16 @@ export default function FloorIsLavaMobileGame() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  paddingBottom: 10,
                 }}
               >
                 <div
                   style={{
                     width: "100%",
-                    maxWidth:
-                      levelData.size >= 6 ? 300 : levelData.size === 5 ? 320 : 340,
+                    maxWidth: boardMaxWidth,
                     margin: "0 auto",
                     display: "grid",
                     gridTemplateColumns: `repeat(${levelData.size}, minmax(0, 1fr))`,
-                    gap: levelData.size >= 6 ? 4 : 6,
+                    gap: gridGap,
                   }}
                 >
                   {tiles}
@@ -633,14 +630,13 @@ export default function FloorIsLavaMobileGame() {
               <div
                 style={{
                   flex: "0 0 auto",
-                  marginTop: 2,
+                  marginTop: 8,
                   display: "flex",
                   flexWrap: "wrap",
                   justifyContent: "center",
-                  gap: 8,
-                  fontSize: 12,
+                  gap: 6,
+                  fontSize: 11,
                   color: "#fec89a",
-                  paddingTop: 4,
                 }}
               >
                 <Legend swatch="#f97316" label="Start" icon="➜" />
@@ -653,27 +649,17 @@ export default function FloorIsLavaMobileGame() {
             {phase === "playing" && (
               <div
                 style={{
-                  background: "rgba(18, 36, 54, 0.92)",
+                  background: "rgba(18, 36, 54, 0.94)",
                   border: "1px solid #67e8f9",
                   borderRadius: 18,
                   padding: 10,
                   boxShadow:
                     "0 0 18px rgba(103,232,249,0.2), inset 0 0 18px rgba(255,255,255,0.03)",
                   marginBottom: 0,
+                  flex: "0 0 auto",
                   textAlign: "center",
                 }}
               >
-                <div
-                  style={{
-                    color: "#cffafe",
-                    fontSize: 12,
-                    marginBottom: 8,
-                    letterSpacing: 0.4,
-                  }}
-                >
-                  Tap an adjacent tile to move
-                </div>
-
                 <button
                   style={freezeButtonStyle}
                   onClick={useFreeze}
@@ -690,7 +676,7 @@ export default function FloorIsLavaMobileGame() {
                     marginTop: 8,
                   }}
                 >
-                  Freezes the collapse timer for a moment. Spacebar works too.
+                  Tap an adjacent tile to move.
                 </div>
               </div>
             )}
@@ -806,7 +792,7 @@ export default function FloorIsLavaMobileGame() {
                   <div>• Green tile = exit</div>
                   <div>• Yellow tiles hold coins</div>
                   <div>• Tap an adjacent tile to move</div>
-                  <div>• Tiles collapse into lava after you leave them</div>
+                  <div>• Use Freeze when the timer gets tight</div>
                   <div>• Wait too long and you lose a life</div>
                 </div>
               </div>
@@ -947,7 +933,13 @@ export default function FloorIsLavaMobileGame() {
 
               <div style={{ color: "#ffe8d6", marginBottom: 10 }}>{message}</div>
 
-              <div style={{ fontSize: 18, marginBottom: 14, color: "#ffd6a5" }}>
+              <div
+                style={{
+                  fontSize: 18,
+                  marginBottom: 14,
+                  color: "#ffd6a5",
+                }}
+              >
                 Lives Remaining: <strong>{lives}</strong>
               </div>
 
@@ -1149,10 +1141,10 @@ const secondaryButtonStyle = {
 
 const freezeButtonStyle = {
   width: "100%",
-  minHeight: 58,
+  minHeight: 56,
   borderRadius: 16,
   border: "1px solid #67e8f9",
-  background: "linear-gradient(180deg, #0ea5e9 0%, #155e75 100%)",
+  background: "linear-gradient(180deg, #22d3ee 0%, #0ea5e9 45%, #155e75 100%)",
   color: "#ecfeff",
   fontWeight: "bold",
   fontSize: 20,
