@@ -818,19 +818,22 @@ export default function FloorIsLavaMobileGame() {
                 }}
               >
                 <div style={{ marginBottom: 8 }}>
-                  Your goal is to <strong>reach the green exit</strong> before the floor gives way.
+                  1. Your goal is to <strong>reach the green exit</strong> before the floor gives way.
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  Move by <strong>clicking an adjacent tile</strong> next to your character.
+                  2. Move by <strong>clicking an adjacent tile</strong> next to your character.
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  Collect <strong>coins</strong> to buy <strong>Freeze charges</strong> and <strong>extra lives</strong> in the shop between levels.
+                  3. Collect <strong>coins</strong> to buy <strong>Freeze charges</strong> and <strong>extra lives</strong> in the shop between levels.
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  Use <strong>Freeze</strong> when you need extra time and the collapse timer is getting low.
+                  4.  Use <strong>Freeze</strong> when you need extra time and the collapse timer is getting low.
+                </div>
+                <div style={{ marginBottom: 8 }}>
+                  5. Watch out: if the <strong>collapse timer runs out</strong>, you <strong>lose a life</strong> and fall into the lava!
                 </div>
                 <div>
-                  Watch out: if the <strong>collapse timer runs out</strong>, you <strong>lose a life</strong> and fall into the lava!
+                  6. If you run out of lives, it's <strong>game over</strong> and you'll lose all your coins! Good luck!
                 </div>
               </div>
 
