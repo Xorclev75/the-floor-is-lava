@@ -1,17 +1,75 @@
-# React + Vite
+# The Floor Is Lava
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fast-paced mobile-friendly browser game where every step matters.
 
-Currently, two official plugins are available:
+Players race across a collapsing grid, collecting coins and trying to reach the exit before the floor drops away into lava. As levels increase, the grid gets larger, the pressure rises, and survival gets harder.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How It Works
 
-## React Compiler
+- Players begin on an **orange start tile**
+- The goal is to reach the **green exit tile**
+- Movement is done by clicking or tapping an **adjacent tile**
+- As the player moves, the floor falls away behind them and becomes **lava**
+- If the **collapse timer** runs out, the player loses a life and falls
+- Coins can be collected and spent between levels in the **shop**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Mobile-friendly tap-to-move gameplay
+- Increasing difficulty through larger grid sizes
+- Random exit placement each level
+- Coin collection and score tracking
+- Shop system between levels
+- Buyable **extra lives**
+- Buyable **freeze charges**
+- Freeze ability to temporarily extend the timer
+- High score and best level tracking
+- Game over and life-loss overlays
+- Custom title screen and instructions overlay
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-"# the-floor-is-lava" 
+## Shop Items
+
+### Extra Life
+Spend coins to gain another chance after falling into lava.
+
+### Freeze Charge
+Spend coins to buy a freeze use, which helps when the collapse timer is running low.
+
+## Controls
+
+### Mobile
+- Tap an adjacent tile to move
+
+### Desktop
+- Arrow keys or WASD to move
+- Spacebar to use Freeze
+
+## Objective
+
+Survive as long as possible by:
+
+- reaching the exit
+- collecting coins
+- buying helpful upgrades
+- managing lives carefully
+- reacting quickly before the timer runs out
+
+Your final performance is based on:
+
+- **score**
+- **coins collected**
+- **levels completed**
+
+## Built With
+
+- **React**
+- **Vite**
+- Inline styling for fast UI iteration and mobile-focused layout adjustments
+
+## Running Locally
+
+Clone the repo, install dependencies, and start the local dev server:
+
+```bash
+npm install
+npm run dev
