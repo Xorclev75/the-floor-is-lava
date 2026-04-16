@@ -906,9 +906,9 @@ export default function FloorIsLavaMobileGame() {
                   >
                     Progression
                   </div>
-                  <div>• Upgrade levels now start at 1</div>
-                  <div>• First purchase always gives a real bonus</div>
-                  <div>• Current bank coins stay highlighted in the shop</div>
+                  <div>• Added permanent upgrades to shop</div>
+                  <div>• Players keep coins upon Game Over</div>
+                  <div>• Total coins earned can be viewed in the stats panel</div>
                 </div>
               </div>
             </div>
@@ -1122,6 +1122,23 @@ export default function FloorIsLavaMobileGame() {
                 />
               </div>
 
+              <div
+                style={{
+                  marginTop: 10,
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 8,
+                  paddingBottom: 12,
+                }}
+              >
+                <button style={secondaryButtonStyle} onClick={quitGame}>
+                  Quit Game
+                </button>
+                <button style={mainButtonStyle} onClick={nextLevel}>
+                  Next Level
+                </button>
+              </div>
+
               {shopMessage && (
                 <div
                   style={{
@@ -1196,7 +1213,7 @@ export default function FloorIsLavaMobileGame() {
 
                 <UpgradeRow
                   title="Starting Lives"
-                  desc={`Start each run with +${getLifeBonus(upgrades.life)} bonus life${getLifeBonus(upgrades.life) === 1 ? "" : "s"}`}
+                  desc={`Start each run with +${getLifeBonus(upgrades.life)} bonus ${getLifeBonus(upgrades.life) === 1 ? "life" : "lives"}`}
                   level={upgrades.life}
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("life", upgrades.life)}
@@ -1205,7 +1222,7 @@ export default function FloorIsLavaMobileGame() {
 
                 <UpgradeRow
                   title="Starting Freeze"
-                  desc={`Start each run with +${getFreezeBonus(upgrades.freeze)} freeze charge${getFreezeBonus(upgrades.freeze) === 1 ? "" : "s"}`}
+                  desc={`Adds +${(getTimerBonusMs(upgrades.timer) / 1000).toFixed(2)}s to your move timer`}
                   level={upgrades.freeze}
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("freeze", upgrades.freeze)}
@@ -1230,22 +1247,7 @@ export default function FloorIsLavaMobileGame() {
                   onClick={() => buyPermanentUpgrade("coin")}
                 />
               </div>
-
-              <div
-                style={{
-                  marginTop: 10,
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 8,
-                }}
-              >
-                <button style={secondaryButtonStyle} onClick={quitGame}>
-                  Quit Game
-                </button>
-                <button style={mainButtonStyle} onClick={nextLevel}>
-                  Next Level
-                </button>
-              </div>
+              
             </div>
           </div>
         )}
