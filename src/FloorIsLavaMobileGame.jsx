@@ -18,6 +18,8 @@ const STORAGE_KEYS = {
   bankCoins: "floor_is_lava_bank_coins",
   totalCoinsEarned: "floor_is_lava_total_coins_earned",
   upgrades: "floor_is_lava_upgrades",
+  ownedThemes: "floor_is_lava_owned_themes",
+  activeTheme: "floor_is_lava_active_theme",
 };
 
 const MIN_UPGRADE_LEVEL = 1;
@@ -36,6 +38,117 @@ const UPGRADE_COSTS = {
   timer: [15, 28, 42],
   coin: [25, 40, 60],
 };
+
+const THEMES = {
+  lava: {
+    name: "Lava Classic",
+    cost: 0,
+    tile: "#5b6472",
+    tileBorder: "#1f2937",
+    lava: "#dc2626",
+    lavaBorder: "#7f1d1d",
+    exit: "#16a34a",
+    exitBorder: "#86efac",
+    coin: "#facc15",
+    coinBorder: "#ca8a04",
+    start: "#f97316",
+    startBorder: "#fdba74",
+    player: "#2563eb",
+    playerBorder: "#93c5fd",
+    playerGlow: "0 0 14px rgba(147,197,253,0.9)",
+    adjacentGlow: "0 0 10px rgba(249,115,22,0.35)",
+  },
+  ice: {
+    name: "Ice World",
+    cost: 150,
+    tile: "#a5f3fc",
+    tileBorder: "#155e75",
+    lava: "#0ea5e9",
+    lavaBorder: "#164e63",
+    exit: "#22c55e",
+    exitBorder: "#bbf7d0",
+    coin: "#fde68a",
+    coinBorder: "#ca8a04",
+    start: "#38bdf8",
+    startBorder: "#e0f2fe",
+    player: "#1d4ed8",
+    playerBorder: "#dbeafe",
+    playerGlow: "0 0 14px rgba(191,219,254,0.95)",
+    adjacentGlow: "0 0 10px rgba(34,211,238,0.45)",
+  },
+  jungle: {
+    name: "Jungle",
+    cost: 200,
+    tile: "#4d7c0f",
+    tileBorder: "#365314",
+    lava: "#b45309",
+    lavaBorder: "#78350f",
+    exit: "#16a34a",
+    exitBorder: "#bbf7d0",
+    coin: "#fde047",
+    coinBorder: "#a16207",
+    start: "#84cc16",
+    startBorder: "#d9f99d",
+    player: "#0f766e",
+    playerBorder: "#99f6e4",
+    playerGlow: "0 0 14px rgba(153,246,228,0.85)",
+    adjacentGlow: "0 0 10px rgba(132,204,22,0.4)",
+  },
+  neon: {
+    name: "Neon Grid",
+    cost: 300,
+    tile: "#111827",
+    tileBorder: "#a21caf",
+    lava: "#ff00aa",
+    lavaBorder: "#f0abfc",
+    exit: "#00ff88",
+    exitBorder: "#bbf7d0",
+    coin: "#ffff00",
+    coinBorder: "#fde047",
+    start: "#ff8800",
+    startBorder: "#fdba74",
+    player: "#00ccff",
+    playerBorder: "#bae6fd",
+    playerGlow: "0 0 16px rgba(0,204,255,0.95)",
+    adjacentGlow: "0 0 12px rgba(255,0,170,0.5)",
+  },
+  dungeon: {
+    name: "Dungeon Stone",
+    cost: 250,
+    tile: "#6b7280",
+    tileBorder: "#374151",
+    lava: "#991b1b",
+    lavaBorder: "#fca5a5",
+    exit: "#65a30d",
+    exitBorder: "#d9f99d",
+    coin: "#eab308",
+    coinBorder: "#854d0e",
+    start: "#9a3412",
+    startBorder: "#fdba74",
+    player: "#4338ca",
+    playerBorder: "#c7d2fe",
+    playerGlow: "0 0 14px rgba(199,210,254,0.85)",
+    adjacentGlow: "0 0 10px rgba(234,179,8,0.35)",
+  },
+};
+
+function getStoredThemes() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.ownedThemes);
+    if (!raw) return ["lava"];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return ["lava"];
+    const valid = parsed.filter((t) => THEMES[t]);
+    return valid.includes("lava") ? valid : ["lava", ...valid];
+  } catch {
+    return ["lava"];
+  }
+}
+
+function getStoredTheme() {
+  const raw = localStorage.getItem(STORAGE_KEYS.activeTheme);
+  return THEMES[raw] ? raw : "lava";
+}
 
 function keyOf(r, c) {
   return `${r}-${c}`;
@@ -170,6 +283,8 @@ export default function FloorIsLavaMobileGame() {
   const [showInstructions, setShowInstructions] = useState(false);
 
   const [upgrades, setUpgrades] = useState(() => getStoredUpgrades());
+  const [ownedThemes, setOwnedThemes] = useState(() => getStoredThemes());
+  const [activeTheme, setActiveTheme] = useState(() => getStoredTheme());
 
   const [level, setLevel] = useState(1);
   const [levelData, setLevelData] = useState(() => generateLevel(1));
@@ -208,6 +323,7 @@ export default function FloorIsLavaMobileGame() {
 
   const moveTime = useMemo(() => getMoveTime(level, upgrades), [level, upgrades]);
   const timerPercent = Math.max(0, Math.min(100, (timer / moveTime) * 100));
+  const colors = THEMES[activeTheme] || THEMES.lava;
 
   function resetDeathGuard() {
     deathInProgressRef.current = false;
@@ -266,7 +382,7 @@ export default function FloorIsLavaMobileGame() {
     setShopMessage("");
     setFreezeActive(false);
     setRunCoins(0);
-    setMessage("Game quit. Your coins and upgrades were saved.");
+    setMessage("Game quit. Your coins, themes, and upgrades were saved.");
     resetDeathGuard();
   }
 
@@ -410,12 +526,7 @@ export default function FloorIsLavaMobileGame() {
   }
 
   function buyLife() {
-    if (bankCoins < EXTRA_LIFE_COST) {
-      setShopMessage("Not enough coins!");
-      setMessage(`You need ${EXTRA_LIFE_COST} coins for an extra life.`);
-      return;
-    }
-
+    if (bankCoins < EXTRA_LIFE_COST) return;
     setBankCoins((prev) => prev - EXTRA_LIFE_COST);
     setLives((prev) => prev + 1);
     setShopMessage("Extra life purchased!");
@@ -423,12 +534,7 @@ export default function FloorIsLavaMobileGame() {
   }
 
   function buyFreeze() {
-    if (bankCoins < FREEZE_COST) {
-      setShopMessage("Not enough coins!");
-      setMessage(`You need ${FREEZE_COST} coins for a freeze charge.`);
-      return;
-    }
-
+    if (bankCoins < FREEZE_COST) return;
     setBankCoins((prev) => prev - FREEZE_COST);
     setFreezeCharges((prev) => prev + 1);
     setShopMessage("Freeze charge purchased!");
@@ -437,21 +543,11 @@ export default function FloorIsLavaMobileGame() {
 
   function buyPermanentUpgrade(type) {
     const currentLevel = upgrades[type];
-    if (currentLevel >= MAX_UPGRADE_LEVEL) {
-      setShopMessage("Upgrade maxed out!");
-      return;
-    }
+    if (currentLevel >= MAX_UPGRADE_LEVEL) return;
 
     const cost = getUpgradeCost(type, currentLevel);
-    if (cost === null) {
-      setShopMessage("Upgrade unavailable.");
-      return;
-    }
-
-    if (bankCoins < cost) {
-      setShopMessage("Not enough coins!");
-      return;
-    }
+    if (cost === null) return;
+    if (bankCoins < cost) return;
 
     const nextUpgrades = {
       ...upgrades,
@@ -474,6 +570,24 @@ export default function FloorIsLavaMobileGame() {
     }
 
     setShopMessage("Permanent upgrade purchased!");
+  }
+
+  function buyOrEquipTheme(themeKey) {
+    const theme = THEMES[themeKey];
+    if (!theme) return;
+
+    if (ownedThemes.includes(themeKey)) {
+      setActiveTheme(themeKey);
+      setShopMessage(`${theme.name} equipped!`);
+      return;
+    }
+
+    if (bankCoins < theme.cost) return;
+
+    setBankCoins((prev) => prev - theme.cost);
+    setOwnedThemes((prev) => [...prev, themeKey]);
+    setActiveTheme(themeKey);
+    setShopMessage(`${theme.name} unlocked!`);
   }
 
   function useFreeze() {
@@ -504,6 +618,14 @@ export default function FloorIsLavaMobileGame() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.upgrades, JSON.stringify(upgrades));
   }, [upgrades]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ownedThemes, JSON.stringify(ownedThemes));
+  }, [ownedThemes]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.activeTheme, activeTheme);
+  }, [activeTheme]);
 
   useEffect(() => {
     if (score > highScore) {
@@ -585,36 +707,36 @@ export default function FloorIsLavaMobileGame() {
         (Math.abs(dc) === 1 && dr === 0);
       const isTappable = phase === "playing" && isAdjacent && !isLava;
 
-      let background = "#5b6472";
+      let background = colors.tile;
       let content = "";
-      let border = "2px solid #1f2937";
+      let border = `2px solid ${colors.tileBorder}`;
       let boxShadow = "none";
 
       if (isLava) {
-        background = "#dc2626";
+        background = colors.lava;
         content = "🔥";
-        border = "2px solid #7f1d1d";
+        border = `2px solid ${colors.lavaBorder}`;
       } else if (isPlayer) {
-        background = "#2563eb";
+        background = colors.player;
         content = "🧍";
-        border = "2px solid #93c5fd";
-        boxShadow = "0 0 14px rgba(147,197,253,0.9)";
+        border = `2px solid ${colors.playerBorder}`;
+        boxShadow = colors.playerGlow;
       } else if (isExit) {
-        background = "#16a34a";
+        background = colors.exit;
         content = "↗";
-        border = "2px solid #86efac";
+        border = `2px solid ${colors.exitBorder}`;
       } else if (isCoin) {
-        background = "#facc15";
+        background = colors.coin;
         content = "🪙";
-        border = "2px solid #ca8a04";
+        border = `2px solid ${colors.coinBorder}`;
       } else if (isStart) {
-        background = "#f97316";
+        background = colors.start;
         content = "➜";
-        border = "2px solid #fdba74";
+        border = `2px solid ${colors.startBorder}`;
       }
 
       if (isTappable) {
-        boxShadow = "0 0 10px rgba(249,115,22,0.35)";
+        boxShadow = colors.adjacentGlow;
       }
 
       tiles.push(
@@ -643,6 +765,7 @@ export default function FloorIsLavaMobileGame() {
             outline: "none",
             appearance: "none",
             WebkitAppearance: "none",
+            color: isPlayer || isLava || isExit || isStart ? "#fff" : "#111",
           }}
         >
           {content}
@@ -759,10 +882,10 @@ export default function FloorIsLavaMobileGame() {
                   color: "#fec89a",
                 }}
               >
-                <Legend swatch="#f97316" label="Start" icon="➜" />
-                <Legend swatch="#16a34a" label="Exit" icon="↗" />
-                <Legend swatch="#facc15" label="Coin" icon="🪙" />
-                <Legend swatch="#dc2626" label="Lava" icon="🔥" />
+                <Legend swatch={colors.start} label="Start" icon="➜" />
+                <Legend swatch={colors.exit} label="Exit" icon="↗" />
+                <Legend swatch={colors.coin} label="Coin" icon="🪙" />
+                <Legend swatch={colors.lava} label="Lava" icon="🔥" />
               </div>
             </div>
 
@@ -880,7 +1003,7 @@ export default function FloorIsLavaMobileGame() {
                   }}
                 >
                   <Stat label="Bank Coins" value={bankCoins} />
-                  <Stat label="Total Coins" value={totalCoinsEarned} />
+                  <Stat label="Theme" value={THEMES[activeTheme].name} />
                 </div>
 
                 <div
@@ -904,11 +1027,11 @@ export default function FloorIsLavaMobileGame() {
                       color: "#ffd6a5",
                     }}
                   >
-                    Progression
+                    Theme Shop Added
                   </div>
-                  <div>• Added permanent upgrades to shop</div>
-                  <div>• Players keep coins upon Game Over</div>
-                  <div>• Total coins earned can be viewed in the stats panel</div>
+                  <div>• Unlock new board color themes</div>
+                  <div>• Equip owned themes anytime in the shop</div>
+                  <div>• Shop buttons disable when you cannot afford them</div>
                 </div>
               </div>
             </div>
@@ -955,7 +1078,7 @@ export default function FloorIsLavaMobileGame() {
                 How to Play
               </div>
 
-             <div
+              <div
                 style={{
                   background: "#1f1111",
                   borderRadius: 12,
@@ -975,13 +1098,13 @@ export default function FloorIsLavaMobileGame() {
                   2. Move by <strong>clicking an adjacent tile</strong> next to your character.
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  3. Collect <strong>coins</strong> to buy <strong>Freeze charges</strong> and <strong>extra lives</strong> in the shop between levels.
+                  3. Collect <strong>coins</strong> to buy <strong>Freeze charges</strong>, <strong>extra lives</strong>, <strong>permanent upgrades</strong>, and <strong>themes</strong>.
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  4.  Use <strong>Freeze</strong> when you need extra time and the collapse timer is getting low.
+                  4. Use <strong>Freeze</strong> when you need extra time and the collapse timer is getting low.
                 </div>
-                <div style={{ marginBottom: 8 }}>
-                  5. Watch out: if the <strong>collapse timer runs out</strong>, you <strong>lose a life</strong> and fall into the lava!
+                <div>
+                  5. If the <strong>collapse timer runs out</strong>, you <strong>lose a life</strong> and fall into the lava.
                 </div>
                 <div>
                   6. If you run out of lives, it's <strong>game over</strong>! Good luck!
@@ -1112,14 +1235,8 @@ export default function FloorIsLavaMobileGame() {
                   marginBottom: 12,
                 }}
               >
-                <CoinStat
-                  label="Current Coins"
-                  value={bankCoins}
-                />
-                <CoinStat
-                  label="Total Coins Earned"
-                  value={totalCoinsEarned}
-                />
+                <CoinStat label="Current Coins" value={bankCoins} />
+                <CoinStat label="Total Coins Earned" value={totalCoinsEarned} />
               </div>
 
               <div
@@ -1127,8 +1244,7 @@ export default function FloorIsLavaMobileGame() {
                   marginTop: 10,
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  gap: 8,
-                  paddingBottom: 12,
+                  gap: 8, paddingBottom: 12,
                 }}
               >
                 <button style={secondaryButtonStyle} onClick={quitGame}>
@@ -1181,6 +1297,7 @@ export default function FloorIsLavaMobileGame() {
                   desc={`${EXTRA_LIFE_COST} coins`}
                   buttonText="Buy"
                   onClick={buyLife}
+                  disabled={bankCoins < EXTRA_LIFE_COST}
                 />
 
                 <ShopRow
@@ -1188,6 +1305,7 @@ export default function FloorIsLavaMobileGame() {
                   desc={`${FREEZE_COST} coins`}
                   buttonText="Buy"
                   onClick={buyFreeze}
+                  disabled={bankCoins < FREEZE_COST}
                 />
               </div>
 
@@ -1213,29 +1331,41 @@ export default function FloorIsLavaMobileGame() {
 
                 <UpgradeRow
                   title="Starting Lives"
-                  desc={`Start each run with +${getLifeBonus(upgrades.life)} bonus ${getLifeBonus(upgrades.life) === 1 ? "life" : "lives"}`}
+                  desc={`Start each run with +${getLifeBonus(upgrades.life)} bonus life${getLifeBonus(upgrades.life) === 1 ? "" : "s"}`}
                   level={upgrades.life}
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("life", upgrades.life)}
                   onClick={() => buyPermanentUpgrade("life")}
+                  disabled={
+                    upgrades.life >= MAX_UPGRADE_LEVEL ||
+                    bankCoins < (getUpgradeCost("life", upgrades.life) ?? Infinity)
+                  }
                 />
 
                 <UpgradeRow
                   title="Starting Freeze"
-                  desc={`Adds +${(getTimerBonusMs(upgrades.timer) / 1000).toFixed(2)}s to your move timer`}
+                  desc={`Start each run with +${getFreezeBonus(upgrades.freeze)} freeze charge${getFreezeBonus(upgrades.freeze) === 1 ? "" : "s"}`}
                   level={upgrades.freeze}
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("freeze", upgrades.freeze)}
                   onClick={() => buyPermanentUpgrade("freeze")}
+                  disabled={
+                    upgrades.freeze >= MAX_UPGRADE_LEVEL ||
+                    bankCoins < (getUpgradeCost("freeze", upgrades.freeze) ?? Infinity)
+                  }
                 />
 
                 <UpgradeRow
                   title="Timer Boost"
-                  desc={`Each level timer gets +${(getTimerBonusMs(upgrades.timer) / 1000).toFixed(2)}s permanent bonus`}
+                  desc={`Adds +${(getTimerBonusMs(upgrades.timer) / 1000).toFixed(2)}s to your move timer`}
                   level={upgrades.timer}
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("timer", upgrades.timer)}
                   onClick={() => buyPermanentUpgrade("timer")}
+                  disabled={
+                    upgrades.timer >= MAX_UPGRADE_LEVEL ||
+                    bankCoins < (getUpgradeCost("timer", upgrades.timer) ?? Infinity)
+                  }
                 />
 
                 <UpgradeRow
@@ -1245,7 +1375,46 @@ export default function FloorIsLavaMobileGame() {
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("coin", upgrades.coin)}
                   onClick={() => buyPermanentUpgrade("coin")}
+                  disabled={
+                    upgrades.coin >= MAX_UPGRADE_LEVEL ||
+                    bankCoins < (getUpgradeCost("coin", upgrades.coin) ?? Infinity)
+                  }
                 />
+              </div>
+
+              <div
+                style={{
+                  background: "#1f1111",
+                  borderRadius: 12,
+                  padding: 12,
+                  marginBottom: 10,
+                  border: "1px solid #5b1c1c",
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    color: "#ffd6a5",
+                    marginBottom: 8,
+                    textAlign: "center",
+                  }}
+                >
+                  Themes
+                </div>
+
+                {Object.entries(THEMES).map(([key, theme]) => (
+                  <ThemeRow
+                    key={key}
+                    title={theme.name}
+                    owned={ownedThemes.includes(key)}
+                    active={activeTheme === key}
+                    cost={theme.cost}
+                    previewColor={theme.tile}
+                    accentColor={theme.lava}
+                    onClick={() => buyOrEquipTheme(key)}
+                    disabled={!ownedThemes.includes(key) && bankCoins < theme.cost}
+                  />
+                ))}
               </div>
               
             </div>
@@ -1381,7 +1550,7 @@ export default function FloorIsLavaMobileGame() {
                 }}
               >
                 <Stat label="Bank Coins" value={bankCoins} />
-                <Stat label="Total Coins" value={totalCoinsEarned} />
+                <Stat label="Theme" value={THEMES[activeTheme].name} />
               </div>
 
               <div
@@ -1418,7 +1587,16 @@ function Stat({ label, value }) {
       }}
     >
       <div style={{ fontSize: 11, color: "#fec89a", marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 20, fontWeight: "bold", color: "#ffe8d6" }}>{value}</div>
+      <div
+        style={{
+          fontSize: typeof value === "string" && value.length > 10 ? 14 : 20,
+          fontWeight: "bold",
+          color: "#ffe8d6",
+          lineHeight: 1.2,
+        }}
+      >
+        {value}
+      </div>
     </div>
   );
 }
@@ -1436,6 +1614,81 @@ function CoinStat({ label, value }) {
     >
       <div style={{ fontSize: 11, color: "#fec89a", marginBottom: 2 }}>{label}</div>
       <div style={{ fontSize: 20, fontWeight: "bold", color: "#ffe8d6" }}>{value}</div>
+    </div>
+  );
+}
+
+function ThemeRow({
+  title,
+  owned,
+  active,
+  cost,
+  previewColor,
+  accentColor,
+  onClick,
+  disabled = false,
+}) {
+  let buttonText = `Buy (${cost})`;
+  if (owned) buttonText = active ? "Equipped" : "Equip";
+
+  const finalDisabled = active || disabled;
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "auto 1fr auto",
+        gap: 8,
+        alignItems: "center",
+        background: "#2a1717",
+        borderRadius: 12,
+        padding: 10,
+        marginBottom: 8,
+        border: active ? "1px solid #fde68a" : "1px solid #5b1c1c",
+      }}
+    >
+      <div style={{ display: "flex", gap: 4 }}>
+        <span
+          style={{
+            width: 18,
+            height: 18,
+            borderRadius: 6,
+            background: previewColor,
+            border: "1px solid rgba(255,255,255,0.2)",
+            display: "inline-block",
+          }}
+        />
+        <span
+          style={{
+            width: 18,
+            height: 18,
+            borderRadius: 6,
+            background: accentColor,
+            border: "1px solid rgba(255,255,255,0.2)",
+            display: "inline-block",
+          }}
+        />
+      </div>
+
+      <div>
+        <div style={{ fontWeight: "bold", color: "#ffe8d6" }}>{title}</div>
+        <div style={{ fontSize: 12, color: active ? "#fde68a" : "#fec89a" }}>
+          {active ? "Currently equipped" : owned ? "Unlocked" : "Locked"}
+        </div>
+      </div>
+
+      <button
+        style={{
+          ...secondaryButtonStyle,
+          minWidth: 92,
+          opacity: finalDisabled ? 0.5 : 1,
+          cursor: finalDisabled ? "not-allowed" : "pointer",
+        }}
+        onClick={onClick}
+        disabled={finalDisabled}
+      >
+        {buttonText}
+      </button>
     </div>
   );
 }
@@ -1472,7 +1725,7 @@ function Legend({ swatch, label, icon }) {
   );
 }
 
-function ShopRow({ title, desc, buttonText, onClick }) {
+function ShopRow({ title, desc, buttonText, onClick, disabled = false }) {
   return (
     <div
       style={{
@@ -1491,15 +1744,32 @@ function ShopRow({ title, desc, buttonText, onClick }) {
         <div style={{ fontWeight: "bold", color: "#ffe8d6" }}>{title}</div>
         <div style={{ fontSize: 12, color: "#fec89a" }}>{desc}</div>
       </div>
-      <button style={secondaryButtonStyle} onClick={onClick}>
+      <button
+        style={{
+          ...secondaryButtonStyle,
+          opacity: disabled ? 0.5 : 1,
+          cursor: disabled ? "not-allowed" : "pointer",
+        }}
+        onClick={onClick}
+        disabled={disabled}
+      >
         {buttonText}
       </button>
     </div>
   );
 }
 
-function UpgradeRow({ title, desc, level, maxLevel, cost, onClick }) {
+function UpgradeRow({
+  title,
+  desc,
+  level,
+  maxLevel,
+  cost,
+  onClick,
+  disabled = false,
+}) {
   const isMaxed = level >= maxLevel;
+  const finalDisabled = isMaxed || disabled;
 
   return (
     <div
@@ -1526,10 +1796,11 @@ function UpgradeRow({ title, desc, level, maxLevel, cost, onClick }) {
       <button
         style={{
           ...secondaryButtonStyle,
-          opacity: isMaxed ? 0.7 : 1,
+          opacity: finalDisabled ? 0.5 : 1,
+          cursor: finalDisabled ? "not-allowed" : "pointer",
         }}
         onClick={onClick}
-        disabled={isMaxed}
+        disabled={finalDisabled}
       >
         {isMaxed ? "Max" : `Buy (${cost})`}
       </button>
