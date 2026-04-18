@@ -66,6 +66,12 @@ Your final performance is based on:
 - **Vite**
 - Inline styling for fast UI iteration and mobile-focused layout adjustments
 
+## Updates
+
+- Added permanent upgrades to the Shop
+- Players do not lose their coins if game over
+- Added themes to the game and ability to buy themes in the shop
+
 ## Running Locally
 
 Clone the repo, install dependencies, and start the local dev server:
@@ -73,3 +79,5 @@ Clone the repo, install dependencies, and start the local dev server:
 ```bash
 npm install
 npm run dev
+
+
