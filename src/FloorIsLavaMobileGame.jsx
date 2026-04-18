@@ -1104,7 +1104,7 @@ export default function FloorIsLavaMobileGame() {
                 <div style={{ marginBottom: 8 }}>
                   4. Use <strong>Freeze</strong> when you need extra time and the collapse timer is getting low.
                 </div>
-                <div>
+                <div style={{ marginBottom: 8 }}>
                   5. If the <strong>collapse timer runs out</strong>, you <strong>lose a life</strong> and fall into the lava.
                 </div>
                 <div>
@@ -1332,7 +1332,7 @@ export default function FloorIsLavaMobileGame() {
 
                 <UpgradeRow
                   title="Starting Lives"
-                  desc={`Start each run with +${getLifeBonus(upgrades.life)} bonus life${getLifeBonus(upgrades.life) === 1 ? "" : "s"}`}
+                  desc={`Start the game with +${getLifeBonus(upgrades.life)} bonus life${getLifeBonus(upgrades.life) === 1 ? "" : "s"}`}
                   level={upgrades.life}
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("life", upgrades.life)}
@@ -1345,7 +1345,7 @@ export default function FloorIsLavaMobileGame() {
 
                 <UpgradeRow
                   title="Starting Freeze"
-                  desc={`Start each run with +${getFreezeBonus(upgrades.freeze)} freeze charge${getFreezeBonus(upgrades.freeze) === 1 ? "" : "s"}`}
+                  desc={`Start the game with +${getFreezeBonus(upgrades.freeze)} freeze charge${getFreezeBonus(upgrades.freeze) === 1 ? "" : "s"}`}
                   level={upgrades.freeze}
                   maxLevel={MAX_UPGRADE_LEVEL}
                   cost={getUpgradeCost("freeze", upgrades.freeze)}
